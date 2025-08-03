@@ -3,26 +3,30 @@ package main
 import (
 	"fmt"
 	"local-chat/models"
+	"local-chat/network"
 	"net"
 	"time"
 )
 
 type Server struct {
-	sendChannels map[int]chan string // for sending TO users
-	recvChannels map[int]chan string // for receiving FROM users
+	Users        []models.User
+	SendChannels map[int]chan models.Message // for sending TO users
+	RecvChannels map[int]chan models.Message // for receiving FROM users
 }
+
+// Need to store the user in the slice of the server
 
 func handleConn(user models.User, server Server) {
 	buf := make([]byte, 1024)
 	for {
 		select {
-		case msg := <-server.recvChannels[user.ID]:
-			for Id, sendChannel := range server.sendChannels {
+		case msg := <-server.RecvChannels[user.ID]:
+			for Id, sendChannel := range server.SendChannels {
 				if Id != user.ID {
 					sendChannel <- msg
 				}
 			}
-		case msg := <-server.sendChannels[user.ID]:
+		case msg := <-server.SendChannels[user.ID]:
 			msg = msg + "\n\n"
 			data := []byte(msg)
 			for len(data) > 0 {
@@ -72,10 +76,11 @@ func ParseMsgSent(conn *net.TCPConn, buf []byte) ([]byte, error) {
 }
 func main() {
 	var id int = 1
-	sendChannels := make(map[int]chan string)
-	recvChannels := make(map[int]chan string)
-	server := Server{sendChannels: sendChannels,
-		recvChannels: recvChannels}
+	intBuf := make([]byte, 0, 64)
+	sendChannels := make(map[int]chan models.Message)
+	recvChannels := make(map[int]chan models.Message)
+	server := Server{SendChannels: sendChannels,
+		RecvChannels: recvChannels}
 
 	addr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:8088")
 	if err != nil {
@@ -93,7 +98,20 @@ func main() {
 			fmt.Println("Error resolving address")
 			panic(err)
 		}
-		user := User{id: id,
+
+		data, err := network.ReadProtocol(conn, intBuf)
+		if err != nil {
+			fmt.Println("Error reading init message")
+			panic(err)
+		}
+
+		var initMsg models.Message
+		err = initMsg.Decode(data)
+		if err != nil {
+			panic(err)
+		}
+
+		user := User{ID: id,
 			name: "Adele",
 			conn: conn}
 		id += 1
@@ -108,4 +126,4 @@ func main() {
 
 }
 
-func InitUserSessionServerSide(conn * net.TCPConn)
+func InitUserSessionServerSide(conn *net.TCPConn)

@@ -1,25 +1,35 @@
 package models
 
 import (
-	"local-chat/network"
+	"encoding/json"
+	"fmt"
 	"time"
 )
 
 type MessageType string
 
 const (
-	Join  MessageType = "join"
-	Text  MessageType = "text"
-	Leave MessageType = "leave"
+	InitUser MessageType = "initUser"
+	Join     MessageType = "join"
+	Text     MessageType = "text"
+	Leave    MessageType = "leave"
 )
 
 type Message struct {
-	Type      string    `json:"type"`
-	Username  string    `json:"username"`
-	content   string    `json:"content"`
-	Timestamp time.Time `json:"timestamp"`
+	Type      MessageType `json:"type"`
+	Username  string      `json:"username"`
+	Content   string      `json:"content"`
+	Timestamp time.Time   `json:"timestamp"`
 }
 
 func (m *Message) Encode() ([]byte, error) {
-	return network.Encode(m)
+	data, err := json.Marshal(m)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal message: %w", err)
+	}
+	return append(data, []byte("\n\n")...), nil
+}
+
+func (m *Message) Decode(data []byte) error {
+	return json.Unmarshal(data, m)
 }

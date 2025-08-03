@@ -1,20 +1,28 @@
 package models
 
 import (
-	"local-chat/network"
+	"encoding/json"
+	"fmt"
 	"net"
 )
 
 type User struct {
 	ID       int          `json:"id"`
 	Username string       `json:"username"`
-	Conn     *net.TCPConn `json:"-"`
 }
 
-func (m *User) Enconde() ([]byte, error) {
-	data, err := network.Enconde(m)
+// This seems super familiar with a io.Reader and writer interface
+// This things should have typed channels like Using the User struct and Message struct this ways this acts as a form
+// of transport layer
+func (u *User) Encode() ([]byte, error) {
+	data, err := json.Marshal(u)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to marshal message: %w", err)
 	}
-	return data, nil
+	return append(data, []byte("\n\n")...), nil
+}
+
+// This function parses the json data coming from ReadProtocol to the object `s`, which will be a Message or a User
+func (u *User) Decode(data []byte) error {
+	return json.Unmarshal(data, u)
 }
