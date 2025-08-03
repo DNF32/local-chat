@@ -14,7 +14,9 @@ type Server struct {
 	RecvChannels map[int]chan models.Message // for receiving FROM users
 }
 
-// Need to store the user in the slice of the server
+// Need to store the user in the slice of the server, maybe we could also use a map, this is just to keep in sync, knowin the users would be useful for multiple rooms
+// This enables the command list active users
+// we could to something even better send a ping through the connection to see if the user is still live
 
 func handleConn(user models.User, server Server) {
 	buf := make([]byte, 1024)
