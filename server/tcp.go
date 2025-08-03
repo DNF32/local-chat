@@ -107,3 +107,5 @@ func main() {
 	}
 
 }
+
+func InitUserSessionServerSide(conn * net.TCPConn)

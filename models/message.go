@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"local-chat/network"
+	"time"
+)
 
 type MessageType string
 
@@ -15,4 +18,8 @@ type Message struct {
 	Username  string    `json:"username"`
 	content   string    `json:"content"`
 	Timestamp time.Time `json:"timestamp"`
+}
+
+func (m *Message) Encode() ([]byte, error) {
+	return network.Encode(m)
 }
