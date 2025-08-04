@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"local-chat/models"
 	"local-chat/network"
@@ -9,16 +10,15 @@ import (
 )
 
 type Server struct {
-	Users        []models.User
+	Users        map[int]models.User
 	SendChannels map[int]chan models.Message // for sending TO users
 	RecvChannels map[int]chan models.Message // for receiving FROM users
 }
 
-// Need to store the user in the slice of the server, maybe we could also use a map, this is just to keep in sync, knowin the users would be useful for multiple rooms
 // This enables the command list active users
 // we could to something even better send a ping through the connection to see if the user is still live
 
-func handleConn(user models.User, server Server) {
+func handleConn(conn *net.TCPConn, user models.User, server Server) {
 	buf := make([]byte, 1024)
 	for {
 		select {
@@ -29,22 +29,43 @@ func handleConn(user models.User, server Server) {
 				}
 			}
 		case msg := <-server.SendChannels[user.ID]:
-			msg = msg + "\n\n"
-			data := []byte(msg)
+			data, err := msg.Encode()
+			if err != nil {
+				return
+			}
 			for len(data) > 0 {
-				n, err := user.Conn.Write(data)
+				n, err := conn.Write(data)
 				if err != nil {
 					return
 				}
 				data = data[n:]
 			}
 		default:
-			msgBytes, err := ParseMsgSent(user.Conn, buf)
+			msgBytes, err := ParseMsgSent(conn, buf)
 			if err != nil {
 				return
 			}
-			if len(msgBytes) > 0 {
-				server.recvChannels[user.ID] <- string(msgBytes)
+
+			var msg models.Message
+			err = msg.Decode(msgBytes)
+			if err != nil {
+				return
+			}
+
+			switch msg.Type {
+			case models.Join:
+				// Add the user to the room general
+				server.Users[user.ID] = user
+				server.RecvChannels[user.ID] <- msg
+			case models.Leave:
+				// Remove the user from the active list
+				delete(server.Users, user.ID)
+				server.RecvChannels[user.ID] <- msg
+			case models.Text:
+				// Broadcast the message
+				server.RecvChannels[user.ID] <- msg
+			default:
+				panic("Incorrect message type received on server")
 			}
 		}
 	}
@@ -113,17 +134,26 @@ func main() {
 			panic(err)
 		}
 
-		user := User{ID: id,
-			name: "Adele",
-			conn: conn}
+		user := models.User{ID: id,
+			Username: initMsg.Username,
+		}
 		id += 1
+		data, _ = json.Marshal(user.ID)
 
-		userSend := make(chan string, 20)
-		userRecv := make(chan string, 20)
-		server.sendChannels[user.id] = userSend
-		server.recvChannels[user.id] = userRecv
+		for len(data) > 0 {
+			n, err := conn.Write(data)
+			if err != nil {
+				return
+			}
+			data = data[n:]
+		}
 
-		go handleConn(user, server)
+		userSend := make(chan models.Message, 20)
+		userRecv := make(chan models.Message, 20)
+		server.SendChannels[user.ID] = userSend
+		server.RecvChannels[user.ID] = userRecv
+
+		go handleConn(conn, user, server)
 	}
 
 }
