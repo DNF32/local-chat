@@ -7,8 +7,12 @@ package main
 
 import (
 	"fmt"
+	"local-chat/internal/client"
+	"local-chat/internal/message"
+	"local-chat/internal/user"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -16,10 +20,21 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// At the top of your file
+import (
+	"os"
+)
+
 const gap = "\n\n"
 
 func main() {
 	p := tea.NewProgram(initialModel())
+
+	// In main() or initialModel()
+	debugFile, err := os.OpenFile("~/code/local-chat/debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err == nil {
+		log.SetOutput(debugFile)
+	}
 
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
@@ -35,7 +50,8 @@ type model struct {
 	messages    []string
 	textarea    textarea.Model
 	senderStyle lipgloss.Style
-	client      *ChatClient
+	client      *client.ChatClient
+	user        *user.User
 	connected   bool
 	err         error
 }
@@ -64,11 +80,14 @@ Type a message and press Enter to send.`)
 
 	// Init the Chatclient
 
-	client, err := InitChatClient()
-
+	fmt.Printf("We are going to init the session: %s")
+	client, user, err := client.InitUserSession()
 	if err != nil {
+		fmt.Println(err.Error())
+		panic("Failed to init user session")
 		return model{}
 	}
+	fmt.Printf("Did we get a user:")
 	return model{
 		textarea:    ta,
 		messages:    []string{},
@@ -76,16 +95,17 @@ Type a message and press Enter to send.`)
 		senderStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("5")),
 		err:         nil,
 		client:      client,
+		user:        user,
 	}
 }
 
-type incomingMsg string
+type incomingMsg message.Message
 
-func IncomingMsg(chat *ChatClient) tea.Msg {
-	msg := <-chat.incoming
-	return incomingMsg(msg[:len(msg)-2])
+func IncomingMsg(chat *client.ChatClient) tea.Msg {
+	msg := <-chat.Incoming
+	return incomingMsg(msg)
 }
-func listenForIncomingMsg(client *ChatClient) tea.Cmd { // Match your type
+func listenForIncomingMsg(client *client.ChatClient) tea.Cmd { // Match your type
 	return func() tea.Msg {
 		return IncomingMsg(client) // Use your existing function
 	}
@@ -124,19 +144,39 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			fmt.Println(m.textarea.Value())
 			return m, tea.Quit
 		case tea.KeyEnter:
-			msg := m.textarea.Value()
-			m.messages = append(m.messages, m.senderStyle.Render("You: ")+msg)
-			// Send message to the handleInput function
-			m.client.outgoing <- msg
+			msgTexted := m.textarea.Value()
+			log.Printf("DEBUG: The typed text is this: %v", msgTexted)
+			msgType, err := ParseMsgType(msgTexted)
+			log.Printf("DEBUG: Processing as Text message with type: %v", msgType)
+			if err != nil {
+				fmt.Println("Failed parsing the the msg type", err.Error())
+			}
+			switch msgType {
+			case message.Text:
+				m.messages = append(m.messages, m.senderStyle.Render("You: ")+msgTexted)
+				message := message.Message{Type: message.Text,
+					Username:  m.user.Username,
+					Content:   msgTexted,
+					Timestamp: time.Now()}
+				m.client.Outgoing <- message
+			case message.Join:
+				joinMsg := fmt.Sprintf("%s joined the chat", m.user.Username)
+				m.messages = append(m.messages, m.senderStyle.Render(joinMsg))
+				message := message.Message{Type: message.Join,
+					Username:  m.user.Username,
+					Content:   msgTexted,
+					Timestamp: time.Now()}
+				m.client.Outgoing <- message
+
+			}
 
 			m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
 		}
 	case incomingMsg:
-		m.messages = append(m.messages, m.senderStyle.Render("Other: ")+string(msg[:len(msg)-2]))
+		m.messages = append(m.messages, m.senderStyle.Render(fmt.Sprintf("%s: ", msg.Username))+msg.Content)
 		m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
-		m.textarea.Reset()
 		m.viewport.GotoBottom()
 		return m, tea.Batch(listenForIncomingMsg(m.client), tiCmd, vpCmd)
 
