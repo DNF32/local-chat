@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"local-chat/internal/message"
+	"log/slog"
+	"os"
 	"strings"
 )
 
@@ -20,4 +22,19 @@ func ParseMsgType(s string) (message.MessageType, error) {
 	default:
 		return message.Text, nil
 	}
+}
+
+func NewFileLogger(path string) (*slog.Logger, error) {
+	file, err := os.OpenFile(
+		path,
+		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+		0666,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	handler := slog.NewTextHandler(file, nil)
+	logger := slog.New(handler)
+	return logger, nil
 }

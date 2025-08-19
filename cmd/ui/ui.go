@@ -11,8 +11,11 @@ import (
 	"local-chat/internal/message"
 	"local-chat/internal/user"
 	"log"
+	"log/slog"
 	"strings"
 	"time"
+
+	"os"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -21,9 +24,7 @@ import (
 )
 
 // At the top of your file
-import (
-	"os"
-)
+const LOG_PATH = "/Users/danielfonseca/scratch/local-chat/debug.log"
 
 const gap = "\n\n"
 
@@ -31,7 +32,11 @@ func main() {
 	p := tea.NewProgram(initialModel())
 
 	// In main() or initialModel()
-	debugFile, err := os.OpenFile("~/code/local-chat/debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	debugFile, err := os.OpenFile(
+		"~/code/local-chat/debug.log",
+		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+		0666,
+	)
 	if err == nil {
 		log.SetOutput(debugFile)
 	}
@@ -52,11 +57,17 @@ type model struct {
 	senderStyle lipgloss.Style
 	client      *client.ChatClient
 	user        *user.User
+	logger      *slog.Logger
 	connected   bool
 	err         error
 }
 
 func initialModel() model {
+	logger, err := NewFileLogger(LOG_PATH)
+	if err != nil {
+		panic(err)
+	}
+
 	ta := textarea.New()
 	ta.Placeholder = "Send a message..."
 	ta.Focus()
@@ -80,14 +91,13 @@ Type a message and press Enter to send.`)
 
 	// Init the Chatclient
 
-	fmt.Printf("We are going to init the session: %s")
 	client, user, err := client.InitUserSession()
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("Failed to init user session")
-		return model{}
 	}
 	fmt.Printf("Did we get a user:")
+
 	return model{
 		textarea:    ta,
 		messages:    []string{},
@@ -96,6 +106,7 @@ Type a message and press Enter to send.`)
 		err:         nil,
 		client:      client,
 		user:        user,
+		logger:      logger,
 	}
 }
 
