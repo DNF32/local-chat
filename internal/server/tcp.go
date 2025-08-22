@@ -2,10 +2,11 @@ package server
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"net"
 	"time"
 
+	"local-chat/internal/logger"
 	"local-chat/internal/message"
 	"local-chat/internal/network"
 	"local-chat/internal/user"
@@ -74,25 +75,24 @@ type Server struct {
 	RecvChannels map[int]chan Event // for receiving FROM users
 
 	Listener *net.TCPListener
+	Logger   *slog.Logger
 }
 
 // This function produces a new event data
 // Modifies user state according to the type of event
 
-func (s *Server) BroadcastEvent(senderId int, validEvent Event) {
+func (s *Server) BroadcastEvent(validEvent Event) {
 	room := s.Rooms[validEvent.RoomName]
 	if room == nil {
-		log.Printf("Room %v does not exist", validEvent.RoomName)
+		s.Logger.Debug("Room %v does not exist", validEvent.RoomName)
 		return
 	}
 	if room.ActiveUsers == nil {
-		log.Printf("ActiveUsers is nil for room %v", validEvent.RoomName)
+		s.Logger.Debug("ActiveUsers is nil for room %v", validEvent.RoomName)
 		return
 	}
 	for userId := range room.ActiveUsers {
-		if userId != senderId {
-			s.RecvChannels[userId] <- validEvent
-		}
+		s.RecvChannels[userId] <- validEvent
 	}
 }
 
@@ -131,19 +131,23 @@ func (s *Server) ProcessUserEvent(u *user.User, validEvent Event) (Event, error)
 }
 
 func (s *Server) Start() {
+	logger, _ := logger.NewFileLogger(logger.SERVER_LOG_PATH)
+	s.Logger = logger
+
 	addr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:8088")
 	if err != nil {
-		fmt.Println("Error resolving address")
+		s.Logger.Info("Error resolving address")
 		panic(err)
 	}
 	fmt.Printf("Listening on %s\n", addr.String())
 
 	listen, err := net.ListenTCP("tcp4", addr)
 	if err != nil {
-		fmt.Println("Error starting TCP listener")
+		s.Logger.Info("Error starting TCP listener")
 		panic(err)
 	}
-	fmt.Println("TCP listener started, waiting for connections...")
+
+	s.Logger.Info("TCP listener started, waiting for connections...")
 	s.Listener = listen
 
 	sendChannels := make(map[int]chan Event)
@@ -163,13 +167,13 @@ func (s *Server) Start() {
 // we could to something even better send a ping through the connection to see if the user is still live
 
 // INFO: This is the entry point of the messages
-func HandleNetworkMessages(conn *net.TCPConn, networkMessages chan message.Message) {
+func HandleNetworkMessages(conn *net.TCPConn, networkMessages chan message.Message, logger *slog.Logger) {
 	buf := make([]byte, 0, 200)
 	defer close(networkMessages) // Close channel when goroutine exits
 	for {
 		msgBytes, err := network.ReadProtocol(conn, buf)
 		if err != nil {
-			fmt.Printf("Error reading from connection: %s\n", err)
+			logger.Info("Error reading from connection: %s\n", err)
 			return
 		}
 		// Handle timeout/no data case
@@ -185,6 +189,7 @@ func HandleNetworkMessages(conn *net.TCPConn, networkMessages chan message.Messa
 		if err != nil {
 			return
 		}
+		logger.Debug("Received network message", "msg", msg)
 		networkMessages <- msg
 	}
 }
@@ -195,7 +200,7 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
 	errChan := make(chan message.Message)
 
 	// handle input comming from the network
-	go HandleNetworkMessages(conn, networkMessages)
+	go HandleNetworkMessages(conn, networkMessages, s.Logger)
 
 	// does event validation
 	go func() {
@@ -206,10 +211,13 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
 				errChan <- message.NewErr(user.Username, err)
 			}
 
+			s.Logger.Debug("Validated a new event", "event", event, "UserId", user.ID, "Username", user.Username)
+
 			event, err = s.ProcessUserEvent(user, event)
 			if err != nil {
 				errChan <- message.NewErr(user.Username, err)
 			}
+			s.Logger.Debug("Validated event has valid user state", "event", event, "UserId", user.ID, "Username", user.Username)
 
 			validEvents <- event
 		}
@@ -218,13 +226,14 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
 	for {
 		select {
 		case event := <-validEvents:
-			s.BroadcastEvent(user.ID, event)
+			s.BroadcastEvent(event)
 		case event := <-s.RecvChannels[user.ID]:
 			msg := event.ToMsg()
 			data, err := msg.Encode()
 			if err != nil {
 				return
 			}
+			s.Logger.Debug("Writting a valid msg to conn:", "msg", msg, "UserID", user.ID, "username", user.Username)
 			for len(data) > 0 {
 				n, err := conn.Write(data)
 				if err != nil {
@@ -237,6 +246,7 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
 			if err != nil {
 				return
 			}
+			s.Logger.Debug("Writting an error msg to conn:", "msg", errMsg, "UserID", user.ID, "username", user.Username)
 			for len(data) > 0 {
 				n, err := conn.Write(data)
 				if err != nil {

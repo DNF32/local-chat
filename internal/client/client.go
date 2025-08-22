@@ -5,6 +5,7 @@ import (
 	"local-chat/internal/message"
 	"local-chat/internal/network"
 	"local-chat/internal/user"
+	"log/slog"
 	"net"
 	"os"
 	"time"
@@ -63,7 +64,7 @@ func InitUser(conn *net.TCPConn, name string) (user.User, error) {
 	return u, nil
 }
 
-func InitUserSession() (*ChatClient, *user.User, error) {
+func InitUserSession(logger *slog.Logger) (*ChatClient, *user.User, error) {
 	if len(os.Args) <= 1 {
 		panic("Failed to provide Username")
 	}
@@ -87,8 +88,8 @@ func InitUserSession() (*ChatClient, *user.User, error) {
 	client := ChatClient{Conn: tcpConn, Incoming: incoming, Outgoing: outgoing}
 
 	// Inits the network layer between client/ui <-> server
-	go network.HandleInput(tcpConn, client.Outgoing)
-	go network.HandleOutput(tcpConn, client.Incoming)
+	go network.HandleInput(tcpConn, client.Outgoing, logger)
+	go network.HandleOutput(tcpConn, client.Incoming, logger)
 
 	return &client, &user, nil
 }

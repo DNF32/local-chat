@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"local-chat/internal/message"
-	"log/slog"
-	"os"
 	"strings"
+	"time"
 )
 
 func ParseMsgType(s string) (message.MessageType, error) {
-
 	switch s[0] {
 	case '/':
 		if strings.HasPrefix(s, "/join") {
@@ -24,17 +22,25 @@ func ParseMsgType(s string) (message.MessageType, error) {
 	}
 }
 
-func NewFileLogger(path string) (*slog.Logger, error) {
-	file, err := os.OpenFile(
-		path,
-		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
-		0666,
-	)
-	if err != nil {
-		return nil, err
+func MakeMsgFromType(username string, msgType message.MessageType, content string) message.Message {
+	var msg message.Message
+	switch msgType {
+	case message.Text:
+		msg = message.Message{Type: message.Text,
+			Username:  username,
+			Content:   content,
+			Timestamp: time.Now()}
+	case message.Join:
+		msg = message.Message{Type: message.Join,
+			Username:  username,
+			Content:   content,
+			Timestamp: time.Now()}
+	case message.Leave:
+		msg = message.Message{Type: message.Leave,
+			Username:  username,
+			Content:   content,
+			Timestamp: time.Now()}
 	}
-
-	handler := slog.NewTextHandler(file, nil)
-	logger := slog.New(handler)
-	return logger, nil
+	return msg
 }
+

@@ -8,12 +8,12 @@ package main
 import (
 	"fmt"
 	"local-chat/internal/client"
+	"local-chat/internal/logger"
 	"local-chat/internal/message"
 	"local-chat/internal/user"
 	"log"
 	"log/slog"
 	"strings"
-	"time"
 
 	"os"
 
@@ -24,7 +24,6 @@ import (
 )
 
 // At the top of your file
-const LOG_PATH = "/Users/danielfonseca/scratch/local-chat/debug.log"
 
 const gap = "\n\n"
 
@@ -33,7 +32,7 @@ func main() {
 
 	// In main() or initialModel()
 	debugFile, err := os.OpenFile(
-		"~/code/local-chat/debug.log",
+		"~/code/local-chat/ui_debug.log",
 		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
 		0666,
 	)
@@ -63,7 +62,7 @@ type model struct {
 }
 
 func initialModel() model {
-	logger, err := NewFileLogger(LOG_PATH)
+	logger, err := logger.NewFileLogger(logger.UI_LOG_PATH)
 	if err != nil {
 		panic(err)
 	}
@@ -91,7 +90,7 @@ Type a message and press Enter to send.`)
 
 	// Init the Chatclient
 
-	client, user, err := client.InitUserSession()
+	client, user, err := client.InitUserSession(logger)
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("Failed to init user session")
@@ -110,22 +109,22 @@ Type a message and press Enter to send.`)
 	}
 }
 
-type incomingMsg message.Message
+type ServerMsg message.Message
 
-func IncomingMsg(chat *client.ChatClient) tea.Msg {
+func ReadServerMsg(chat *client.ChatClient) tea.Msg {
 	msg := <-chat.Incoming
-	return incomingMsg(msg)
+	return ServerMsg(msg)
 }
-func listenForIncomingMsg(client *client.ChatClient) tea.Cmd { // Match your type
+func listenForServerMsg(client *client.ChatClient) tea.Cmd { // Match your type
 	return func() tea.Msg {
-		return IncomingMsg(client) // Use your existing function
+		return ReadServerMsg(client) // Use your existing function
 	}
 }
 
 func (m model) Init() tea.Cmd {
 	return tea.Batch(
 		textarea.Blink,
-		listenForIncomingMsg(m.client), // Now returns tea.Cmd
+		listenForServerMsg(m.client), // Now returns tea.Cmd
 	)
 }
 
@@ -156,37 +155,25 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case tea.KeyEnter:
 			msgTexted := m.textarea.Value()
-			log.Printf("DEBUG: The typed text is this: %v", msgTexted)
 			msgType, err := ParseMsgType(msgTexted)
-			log.Printf("DEBUG: Processing as Text message with type: %v", msgType)
 			if err != nil {
-				fmt.Println("Failed parsing the the msg type", err.Error())
+				//fmt.Println("Failed parsing the the msg type", err.Error())
 			}
-			switch msgType {
-			case message.Text:
-				m.messages = append(m.messages, m.senderStyle.Render("You: ")+msgTexted)
-				message := message.Message{Type: message.Text,
-					Username:  m.user.Username,
-					Content:   msgTexted,
-					Timestamp: time.Now()}
-				m.client.Outgoing <- message
-			case message.Join:
-				joinMsg := fmt.Sprintf("%s joined the chat", m.user.Username)
-				m.messages = append(m.messages, m.senderStyle.Render(joinMsg))
-				message := message.Message{Type: message.Join,
-					Username:  m.user.Username,
-					Content:   msgTexted,
-					Timestamp: time.Now()}
-				m.client.Outgoing <- message
 
-			}
+			message := MakeMsgFromType(m.user.Username, msgType, msgTexted)
+			m.client.Outgoing <- message
 
 			m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
 		}
-	case incomingMsg:
-		m.messages = append(m.messages, m.senderStyle.Render(fmt.Sprintf("%s: ", msg.Username))+msg.Content)
+	case ServerMsg:
+		switch msg.Type {
+		case message.Join, message.Leave, message.Error:
+			m.messages = append(m.messages, m.senderStyle.Render(msg.Content))
+		case message.Text:
+			m.messages = append(m.messages, m.senderStyle.Render(fmt.Sprintf("%s: ", msg.Username))+msg.Content)
+		}
 		m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
 		m.viewport.GotoBottom()
 		return m, tea.Batch(listenForIncomingMsg(m.client), tiCmd, vpCmd)

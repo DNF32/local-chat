@@ -1,0 +1,184 @@
+time=2025-08-21T17:04:35.222+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:04:35.222+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:04:38.505+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:04:38.505+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:04:39.964+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:04:39.964594+01:00\"}\n\n"
+time=2025-08-21T17:04:39.967+01:00 level=INFO msg="Received message" type=error username=mega2 content="User not in room, so can't send a message"
+time=2025-08-21T17:04:43.489+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:04:43.489636+01:00\"}\n\n"
+time=2025-08-21T17:04:46.302+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:04:46.302048+01:00\"}\n\n"
+time=2025-08-21T17:04:46.303+01:00 level=INFO msg="Received message" type=joined username=mega content="mega joined Room main"
+time=2025-08-21T17:04:48.100+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:04:48.100555+01:00\"}\n\n"
+time=2025-08-21T17:04:48.101+01:00 level=INFO msg="Received message" type=send username=mega content=this
+time=2025-08-21T17:04:51.502+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"hello im mega\",\"timestamp\":\"2025-08-21T17:04:51.502067+01:00\"}\n\n"
+time=2025-08-21T17:04:51.504+01:00 level=INFO msg="Received message" type=send username=mega content="hello im mega"
+time=2025-08-21T17:04:53.756+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:07:54.997+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:07:54.997+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:07:57.073+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:07:57.073+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:08:00.566+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:08:00.5666+01:00\"}\n\n"
+time=2025-08-21T17:08:03.212+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:08:03.21241+01:00\"}\n\n"
+time=2025-08-21T17:08:03.213+01:00 level=INFO msg="Received message" type=joined username=mega2 content="mega2 joined Room main"
+time=2025-08-21T17:08:04.054+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:08:04.054039+01:00\"}\n\n"
+time=2025-08-21T17:08:04.054+01:00 level=INFO msg="Received message" type=send username=mega2 content=this
+time=2025-08-21T17:08:07.392+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"hello my man\",\"timestamp\":\"2025-08-21T17:08:07.392918+01:00\"}\n\n"
+time=2025-08-21T17:08:07.393+01:00 level=INFO msg="Received message" type=send username=mega2 content="hello my man"
+time=2025-08-21T17:08:10.517+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"hello girly\",\"timestamp\":\"2025-08-21T17:08:10.517348+01:00\"}\n\n"
+time=2025-08-21T17:08:10.518+01:00 level=INFO msg="Received message" type=send username=mega content="hello girly"
+time=2025-08-21T17:08:13.513+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:08:13.513+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:08:13.513495+01:00\"}\n\n"
+time=2025-08-21T17:08:13.514+01:00 level=INFO msg="Received message" type=error username=mega content="Failed to parse message content into server Event"
+time=2025-08-21T17:08:13.514+01:00 level=INFO msg="Received message" type=error username=mega content="The other message types are not supported"
+time=2025-08-21T17:08:13.514+01:00 level=WARN msg="Channel full, dropping message"
+time=2025-08-21T17:10:21.809+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:10:21.809+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:10:25.737+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:10:25.737+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:10:28.121+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:10:28.121055+01:00\"}\n\n"
+time=2025-08-21T17:10:30.981+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:10:30.981659+01:00\"}\n\n"
+time=2025-08-21T17:10:30.982+01:00 level=INFO msg="Received message" type=joined username=mega content="mega joined Room main"
+time=2025-08-21T17:10:34.792+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this is my man\",\"timestamp\":\"2025-08-21T17:10:34.791789+01:00\"}\n\n"
+time=2025-08-21T17:10:34.793+01:00 level=INFO msg="Received message" type=send username=mega content="this is my man"
+time=2025-08-21T17:10:37.560+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"hello man\",\"timestamp\":\"2025-08-21T17:10:37.560716+01:00\"}\n\n"
+time=2025-08-21T17:10:37.562+01:00 level=INFO msg="Received message" type=send username=mega22 content="hello man"
+time=2025-08-21T17:10:40.199+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:10:40.200+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega22\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:10:40.200045+01:00\"}\n\n"
+time=2025-08-21T17:10:40.202+01:00 level=INFO msg="Received message" type=left username=mega22 content="mega22 left Room main"
+time=2025-08-21T17:10:42.738+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:10:42.738051+01:00\"}\n\n"
+time=2025-08-21T17:10:42.739+01:00 level=INFO msg="Received message" type=error username=mega22 content="User not in room, so can't send a message"
+time=2025-08-21T17:10:46.172+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:10:46.172746+01:00\"}\n\n"
+time=2025-08-21T17:10:46.174+01:00 level=INFO msg="Received message" type=joined username=mega22 content="mega22 joined Room main"
+time=2025-08-21T17:10:58.287+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:10:58.288+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega22\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:10:58.288525+01:00\"}\n\n"
+time=2025-08-21T17:10:58.289+01:00 level=INFO msg="Received message" type=left username=mega22 content="mega22 left Room main"
+time=2025-08-21T17:11:00.791+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:11:00.792+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega22\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:11:00.792511+01:00\"}\n\n"
+time=2025-08-21T17:11:00.794+01:00 level=INFO msg="Received message" type=error username=mega22 content="Can't leave room, current user isn't in one"
+time=2025-08-21T17:12:56.428+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:12:56.428+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:12:59.016+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:12:59.016+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:13:01.560+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:13:01.559996+01:00\"}\n\n"
+time=2025-08-21T17:13:06.043+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:13:06.043318+01:00\"}\n\n"
+time=2025-08-21T17:13:06.043+01:00 level=INFO msg="Received message" type=joined username=mega content="mega joined Room main"
+time=2025-08-21T17:13:59.669+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:13:59.669+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:14:02.055+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:14:02.055+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:14:07.645+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:14:07.645871+01:00\"}\n\n"
+time=2025-08-21T17:14:11.731+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:14:11.731303+01:00\"}\n\n"
+time=2025-08-21T17:14:11.732+01:00 level=INFO msg="Received message" type=joined username=mega2 content="mega2 joined Room main"
+time=2025-08-21T17:14:13.869+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:14:13.869909+01:00\"}\n\n"
+time=2025-08-21T17:14:13.871+01:00 level=INFO msg="Received message" type=send username=mega2 content=this
+time=2025-08-21T17:17:05.389+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:17:05.389+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:17:07.698+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:17:07.698+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:17:10.125+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:17:10.125933+01:00\"}\n\n"
+time=2025-08-21T17:17:13.809+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:17:13.809668+01:00\"}\n\n"
+time=2025-08-21T17:17:15.705+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:17:15.705236+01:00\"}\n\n"
+time=2025-08-21T17:17:53.185+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:17:53.185613+01:00\"}\n\n"
+time=2025-08-21T17:17:55.279+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:17:55.279+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:17:55.279135+01:00\"}\n\n"
+time=2025-08-21T17:17:57.224+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"das\",\"timestamp\":\"2025-08-21T17:17:57.224903+01:00\"}\n\n"
+time=2025-08-21T17:17:58.650+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"dasdas\",\"timestamp\":\"2025-08-21T17:17:58.650317+01:00\"}\n\n"
+time=2025-08-21T17:18:00.685+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:18:00.685+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:18:00.6858+01:00\"}\n\n"
+time=2025-08-21T17:22:21.620+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:22:21.62041+01:00\"}\n\n"
+time=2025-08-21T17:22:26.788+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:22:26.788361+01:00\"}\n\n"
+time=2025-08-21T17:23:05.714+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"thi\",\"timestamp\":\"2025-08-21T17:23:05.714274+01:00\"}\n\n"
+time=2025-08-21T17:23:06.810+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:23:06.810731+01:00\"}\n\n"
+time=2025-08-21T17:24:09.249+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:09.249+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:12.099+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:12.099+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:12.893+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:24:12.89372+01:00\"}\n\n"
+time=2025-08-21T17:24:12.895+01:00 level=INFO msg="Received message" type=error username=mega content="User not in room, so can't send a message"
+time=2025-08-21T17:24:17.113+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:24:17.113742+01:00\"}\n\n"
+time=2025-08-21T17:24:20.592+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:24:20.592315+01:00\"}\n\n"
+time=2025-08-21T17:24:24.083+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:24:24.083528+01:00\"}\n\n"
+time=2025-08-21T17:24:26.742+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega\",\"content\":\"hello\",\"timestamp\":\"2025-08-21T17:24:26.742673+01:00\"}\n\n"
+time=2025-08-21T17:24:36.101+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:36.101+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:38.794+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:38.794+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:24:41.861+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:24:41.861156+01:00\"}\n\n"
+time=2025-08-21T17:24:45.587+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main2\",\"timestamp\":\"2025-08-21T17:24:45.587015+01:00\"}\n\n"
+time=2025-08-21T17:24:45.588+01:00 level=INFO msg="Received message" type=error username=mega2 content="invalid room entered: main2"
+time=2025-08-21T17:24:50.479+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:24:50.479479+01:00\"}\n\n"
+time=2025-08-21T17:24:50.480+01:00 level=INFO msg="Received message" type=joined username=mega2 content="mega2 joined Room main"
+time=2025-08-21T17:24:51.835+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:24:51.835919+01:00\"}\n\n"
+time=2025-08-21T17:24:51.836+01:00 level=INFO msg="Received message" type=send username=mega2 content=this
+time=2025-08-21T17:24:53.877+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"hello\",\"timestamp\":\"2025-08-21T17:24:53.877405+01:00\"}\n\n"
+time=2025-08-21T17:24:53.878+01:00 level=INFO msg="Received message" type=send username=mega22 content=hello
+time=2025-08-21T17:24:54.932+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:24:54.932298+01:00\"}\n\n"
+time=2025-08-21T17:24:54.932+01:00 level=INFO msg="Received message" type=send username=mega22 content=this
+time=2025-08-21T17:26:03.330+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:26:03.330+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:26:07.731+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:26:07.731+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:26:10.052+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:26:10.052481+01:00\"}\n\n"
+time=2025-08-21T17:26:13.453+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:26:13.453417+01:00\"}\n\n"
+time=2025-08-21T17:26:13.455+01:00 level=INFO msg="Received message" type=joined username=mega22 content="mega22 joined Room main"
+time=2025-08-21T17:26:15.178+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:26:15.178479+01:00\"}\n\n"
+time=2025-08-21T17:26:15.179+01:00 level=INFO msg="Received message" type=send username=mega2 content=this
+time=2025-08-21T17:26:17.573+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"hello\",\"timestamp\":\"2025-08-21T17:26:17.573504+01:00\"}\n\n"
+time=2025-08-21T17:26:17.574+01:00 level=INFO msg="Received message" type=send username=mega2 content=hello
+time=2025-08-21T17:26:22.170+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"hi main\",\"timestamp\":\"2025-08-21T17:26:22.170818+01:00\"}\n\n"
+time=2025-08-21T17:26:22.171+01:00 level=INFO msg="Received message" type=send username=mega2 content="hi main"
+time=2025-08-21T17:26:24.359+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:26:24.359+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega2\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:26:24.359355+01:00\"}\n\n"
+time=2025-08-21T17:26:24.360+01:00 level=INFO msg="Received message" type=left username=mega2 content="mega2 left Room main"
+time=2025-08-21T17:26:27.293+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:26:27.293893+01:00\"}\n\n"
+time=2025-08-21T17:26:27.294+01:00 level=INFO msg="Received message" type=error username=mega2 content="User not in room, so can't send a message"
+time=2025-08-21T17:26:31.660+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:26:31.660765+01:00\"}\n\n"
+time=2025-08-21T17:26:31.661+01:00 level=INFO msg="Received message" type=error username=mega2 content="User not in room, so can't send a message"
+time=2025-08-21T17:27:24.398+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:27:24.398944+01:00\"}\n\n"
+time=2025-08-21T17:27:25.761+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:27:25.761146+01:00\"}\n\n"
+time=2025-08-21T17:27:29.075+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:27:29.076+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega22\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:27:29.07601+01:00\"}\n\n"
+time=2025-08-21T17:27:30.843+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:27:30.843367+01:00\"}\n\n"
+time=2025-08-21T17:27:30.844+01:00 level=INFO msg="Received message" type=error username=mega22 content="User not in room, so can't send a message"
+time=2025-08-21T17:27:33.973+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join thi\",\"timestamp\":\"2025-08-21T17:27:33.97332+01:00\"}\n\n"
+time=2025-08-21T17:27:33.974+01:00 level=INFO msg="Received message" type=error username=mega22 content="invalid room entered: thi"
+time=2025-08-21T17:27:39.411+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:27:39.411695+01:00\"}\n\n"
+time=2025-08-21T17:27:40.617+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:27:40.617731+01:00\"}\n\n"
+time=2025-08-21T17:27:43.356+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:27:43.35627+01:00\"}\n\n"
+time=2025-08-21T17:27:43.357+01:00 level=INFO msg="Received message" type=joined username=mega22 content="mega22 joined Room main"
+time=2025-08-21T17:28:35.717+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:28:35.717+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:28:38.128+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:28:38.128+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:28:44.983+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:28:44.983164+01:00\"}\n\n"
+time=2025-08-21T17:28:44.984+01:00 level=INFO msg="Received message" type=error username=mega2 content="User not in room, so can't send a message"
+time=2025-08-21T17:28:50.851+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:28:50.851728+01:00\"}\n\n"
+time=2025-08-21T17:28:54.949+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega2\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:28:54.949852+01:00\"}\n\n"
+time=2025-08-21T17:28:54.952+01:00 level=INFO msg="Received message" type=joined username=mega2 content="mega2 joined Room main"
+time=2025-08-21T17:28:58.400+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"this is the end\",\"timestamp\":\"2025-08-21T17:28:58.400106+01:00\"}\n\n"
+time=2025-08-21T17:28:58.400+01:00 level=INFO msg="Received message" type=send username=mega2 content="this is the end"
+time=2025-08-21T17:29:00.456+01:00 level=INFO msg="Parsed a leave message"
+time=2025-08-21T17:29:00.457+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega2\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:29:00.457681+01:00\"}\n\n"
+time=2025-08-21T17:29:00.458+01:00 level=INFO msg="Received message" type=left username=mega2 content="mega2 left Room main"
+time=2025-08-21T17:29:02.778+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega2\",\"content\":\"thihids\",\"timestamp\":\"2025-08-21T17:29:02.778898+01:00\"}\n\n"
+time=2025-08-21T17:29:02.779+01:00 level=INFO msg="Received message" type=error username=mega2 content="User not in room, so can't send a message"
+time=2025-08-21T17:39:21.723+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:39:21.723+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:39:24.372+01:00 level=INFO msg="HandleOutput started" addr=127.0.0.1:8088
+time=2025-08-21T17:39:24.372+01:00 level=INFO msg="HandleInput started" addr=127.0.0.1:8088
+time=2025-08-21T17:39:29.756+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega222\",\"content\":\"/join maa\",\"timestamp\":\"2025-08-21T17:39:29.756336+01:00\"}\n\n"
+time=2025-08-21T17:39:29.759+01:00 level=INFO msg="Received message" type=error username=mega222 content="invalid room entered: maa"
+time=2025-08-21T17:39:36.172+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega222\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:39:36.172144+01:00\"}\n\n"
+time=2025-08-21T17:39:36.173+01:00 level=INFO msg="Received message" type=joined username=mega222 content="mega222 joined Room main"
+time=2025-08-21T17:39:40.697+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega222\",\"content\":\"this\",\"timestamp\":\"2025-08-21T17:39:40.697179+01:00\"}\n\n"
+time=2025-08-21T17:39:40.697+01:00 level=INFO msg="Received message" type=send username=mega222 content=this
+time=2025-08-21T17:39:48.536+01:00 level=INFO msg="Sending message" data="{\"type\":\"joined\",\"username\":\"mega22\",\"content\":\"/join main\",\"timestamp\":\"2025-08-21T17:39:48.536722+01:00\"}\n\n"
+time=2025-08-21T17:39:48.537+01:00 level=INFO msg="Received message" type=joined username=mega22 content="mega22 joined Room main"
+time=2025-08-21T17:39:48.537+01:00 level=INFO msg="Received message" type=joined username=mega22 content="mega22 joined Room main"
+time=2025-08-21T17:39:50.269+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this \",\"timestamp\":\"2025-08-21T17:39:50.269177+01:00\"}\n\n"
+time=2025-08-21T17:39:50.270+01:00 level=INFO msg="Received message" type=send username=mega22 content=this
+time=2025-08-21T17:39:50.270+01:00 level=INFO msg="Received message" type=send username=mega22 content=this
+time=2025-08-21T17:39:54.227+01:00 level=INFO msg="Sending message" data="{\"type\":\"send\",\"username\":\"mega22\",\"content\":\"this is the end\",\"timestamp\":\"2025-08-21T17:39:54.227843+01:00\"}\n\n"
+time=2025-08-21T17:39:54.229+01:00 level=INFO msg="Received message" type=send username=mega22 content="this is the end"
+time=2025-08-21T17:39:54.229+01:00 level=INFO msg="Received message" type=send username=mega22 content="this is the end"
+time=2025-08-21T17:39:58.624+01:00 level=INFO msg="Sending message" data="{\"type\":\"left\",\"username\":\"mega22\",\"content\":\"/leave\",\"timestamp\":\"2025-08-21T17:39:58.624188+01:00\"}\n\n"
+time=2025-08-21T17:39:58.624+01:00 level=INFO msg="Received message" type=left username=mega22 content="mega22 left Room main"
