@@ -25,7 +25,7 @@ type EncryptedData struct {
 	Data string `json:"data"`
 }
 
-func (sd *Serde) Encode(obj SerdeAble) ([]byte, error) {
+func (sd *Serde) EncodeEncrypted(obj SerdeAble) ([]byte, error) {
 	data, err := obj.Encode()
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (sd *Serde) Encode(obj SerdeAble) ([]byte, error) {
 	return encryptedBytes, nil
 }
 
-func (sd *Serde) Decode(data []byte, obj SerdeAble) error {
+func (sd *Serde) DecodeEncrypted(data []byte, obj SerdeAble) error {
 	var enData EncryptedData
 	err := json.Unmarshal(data, &enData)
 	if err != nil {
