@@ -2,7 +2,7 @@ package server
 
 import (
 	"local-chat/internal/message"
-	"local-chat/internal/user"
+	"local-chat/internal/connected_user"
 	"sync"
 	"testing"
 	"time"
@@ -26,9 +26,9 @@ func getTestServer(t *testing.T) *Server {
 func TestUserStateValid(t *testing.T) {
 	s := getTestServer(t)
 
-	u := user.User{ID: 1, Username: "Tester"}
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
 	// This user sent a valid event
-	general := s.Rooms[user.General]
+	general := s.Rooms[connected_user.General]
 	u.JoinRoom(general)
 
 	if u.InRoom != true && u.Room != general {
@@ -51,7 +51,7 @@ func TestUserStateValid(t *testing.T) {
 		Action:    "text",
 		Content:   "this is a new message",
 		Timestamp: validEvent.Timestamp,
-		RoomName:  user.General}
+		RoomName:  connected_user.General}
 
 	if equal, field := newEvent.EqualTo(&expectedEvent); equal != true {
 		t.Fatalf("Expected events to be equal but got error in: %v", field)
@@ -60,9 +60,9 @@ func TestUserStateValid(t *testing.T) {
 
 func TestFailingJoinEventUserInRoomValid(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
 	// This user sent a valid event
-	general := s.Rooms[user.General]
+	general := s.Rooms[connected_user.General]
 	u.JoinRoom(general)
 	if !u.InRoom || u.Room != general {
 		t.Fatal("The User state set had an issue please review .JoinRoom method")
@@ -89,7 +89,7 @@ func TestFailingJoinEventUserInRoomValid(t *testing.T) {
 
 func TestInvalidRoomName(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
 	// This user sent a valid event
 	// general := s.Rooms[user.General]
 
@@ -115,8 +115,8 @@ func TestInvalidRoomName(t *testing.T) {
 
 func TestValidJoiningRoom(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
-	general := s.Rooms[user.General]
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
+	general := s.Rooms[connected_user.General]
 
 	validEvent := Event{Type: message.Join,
 		Username: u.Username,
@@ -132,7 +132,7 @@ func TestValidJoiningRoom(t *testing.T) {
 		Username: u.Username,
 		Action:   "joined",
 		Content:  "general", Timestamp: time.Now(),
-		RoomName: user.General,
+		RoomName: connected_user.General,
 	}
 
 	// We need to the new user state and the expected event if matched we only need to see RoomName
@@ -147,7 +147,7 @@ func TestValidJoiningRoom(t *testing.T) {
 
 func TestFailingTextEventUserNotInRoom(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
 
 	// Verify user is not in any room initially
 	if u.InRoom {
@@ -180,8 +180,8 @@ func TestFailingTextEventUserNotInRoom(t *testing.T) {
 
 func TestTextEventUserInRoom(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
-	general := s.Rooms[user.General]
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
+	general := s.Rooms[connected_user.General]
 	u.JoinRoom(general)
 
 	// Verify user IS in a room after joining
@@ -207,7 +207,7 @@ func TestTextEventUserInRoom(t *testing.T) {
 		Action:    "",
 		Content:   "Hello everyone!",
 		Timestamp: time.Now(),
-		RoomName:  user.General}
+		RoomName:  connected_user.General}
 
 	if expectedEvent.RoomName != newEvent.RoomName {
 		t.Fatalf("Expected RoomName: '%s', got: '%s'", expectedEvent.RoomName, newEvent.RoomName)
@@ -221,8 +221,8 @@ func TestTextEventUserInRoom(t *testing.T) {
 
 func TestLeaveEventUserInRoom(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
-	general := s.Rooms[user.General]
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
+	general := s.Rooms[connected_user.General]
 	u.JoinRoom(general)
 
 	// Verify user is in room initially
@@ -243,8 +243,8 @@ func TestLeaveEventUserInRoom(t *testing.T) {
 	}
 
 	// Should return the room name they left
-	if newEvent.RoomName != user.General {
-		t.Fatalf("Expected RoomName: '%s', got: '%s'", user.General, newEvent.RoomName)
+	if newEvent.RoomName != connected_user.General {
+		t.Fatalf("Expected RoomName: '%s', got: '%s'", connected_user.General, newEvent.RoomName)
 	}
 
 	// User should no longer be in room after leaving
@@ -255,7 +255,7 @@ func TestLeaveEventUserInRoom(t *testing.T) {
 
 func TestLeaveEventUserNotInRoom(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
 
 	// Verify user is not in room initially
 	if u.InRoom {
@@ -280,7 +280,7 @@ func TestLeaveEventUserNotInRoom(t *testing.T) {
 
 func TestUnsupportedMessageType(t *testing.T) {
 	s := getTestServer(t)
-	u := user.User{ID: 1, Username: "Tester"}
+	u := connected_user.ConnectedUser{ID: 1, Username: "Tester"}
 
 	// Create event with unsupported message type
 	validEvent := Event{Type: message.Error, // Or whatever represents unsupported type

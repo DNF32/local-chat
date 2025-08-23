@@ -10,7 +10,7 @@ import (
 	"local-chat/internal/client"
 	"local-chat/internal/logger"
 	"local-chat/internal/message"
-	"local-chat/internal/user"
+	"local-chat/internal/connected_user"
 	"log"
 	"log/slog"
 	"strings"
@@ -55,7 +55,7 @@ type model struct {
 	textarea    textarea.Model
 	senderStyle lipgloss.Style
 	client      *client.ChatClient
-	user        *user.User
+	user        *connected_user.ConnectedUser
 	logger      *slog.Logger
 	connected   bool
 	err         error

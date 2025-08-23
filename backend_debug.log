@@ -276,3 +276,6 @@ time=2025-08-21T17:39:58.624+01:00 level=DEBUG msg="Validated a new event" event
 time=2025-08-21T17:39:58.624+01:00 level=DEBUG msg="Validated event has valid user state" event="{Type:left Username:mega22 Action:left Content: Timestamp:2025-08-21 17:39:58.624188 +0100 WEST RoomName:main}" UserId=1 Username=mega22
 time=2025-08-21T17:39:58.624+01:00 level=DEBUG msg="Writting a valid msg to conn:" msg="{Type:left Username:mega22 Content:mega22 left Room main Timestamp:2025-08-21 17:39:58.624188 +0100 WEST}" UserID=2 username=mega222
 time=2025-08-22T00:09:39.770+01:00 level=INFO msg="Error starting TCP listener"
+time=2025-08-23T22:26:55.325+01:00 level=INFO msg="Error reading from connection: %s\n" !BADKEY="read tcp4 127.0.0.1:8088->127.0.0.1:49177: read: connection reset by peer"
+time=2025-08-23T22:26:55.327+01:00 level=DEBUG msg="Validated a new event" event="{Type: Username: Action: Content: Timestamp:0001-01-01 00:00:00 +0000 UTC RoomName:}" UserId=1 Username=mega22
+time=2025-08-23T22:26:55.327+01:00 level=DEBUG msg="Writting an error msg to conn:" msg="{Type:error Username:mega22 Content:Failed to parse message content into server Event Timestamp:2025-08-23 22:26:55.327526 +0100 WEST m=+30680.078789584}" UserID=1 username=mega22

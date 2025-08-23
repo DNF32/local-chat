@@ -9,7 +9,7 @@ import (
 	"local-chat/internal/logger"
 	"local-chat/internal/message"
 	"local-chat/internal/network"
-	"local-chat/internal/user"
+	"local-chat/internal/connected_user"
 )
 
 type Event struct {
@@ -18,7 +18,7 @@ type Event struct {
 	Action    string
 	Content   string    `json:"content"`
 	Timestamp time.Time `json:"timestamp"`
-	RoomName  user.RoomName
+	RoomName  connected_user.RoomName
 }
 
 func (e *Event) ToMsg() message.Message {
@@ -69,8 +69,8 @@ func ValidateNewEvent(m message.Message) (Event, error) {
 var id int = 1
 
 type Server struct {
-	Users        map[int]*user.User
-	Rooms        map[user.RoomName]*user.Room
+	Users        map[int]*connected_user.ConnectedUser
+	Rooms        map[connected_user.RoomName]*connected_user.Room
 	SendChannels map[int]chan Event // for sending TO users
 	RecvChannels map[int]chan Event // for receiving FROM users
 
@@ -96,13 +96,13 @@ func (s *Server) BroadcastEvent(validEvent Event) {
 	}
 }
 
-func (s *Server) ProcessUserEvent(u *user.User, validEvent Event) (Event, error) {
-	var roomName user.RoomName
+func (s *Server) ProcessUserEvent(u *connected_user.ConnectedUser, validEvent Event) (Event, error) {
+	var roomName connected_user.RoomName
 	var err error
 
 	switch validEvent.Type {
 	case message.Join:
-		roomName, err = user.ValidateRoom(validEvent.Content)
+		roomName, err = connected_user.ValidateRoom(validEvent.Content)
 		if err != nil {
 			return Event{}, err
 		}
@@ -156,11 +156,11 @@ func (s *Server) Start() {
 	s.RecvChannels = recvChannels
 	s.SendChannels = sendChannels
 
-	s.Rooms = make(map[user.RoomName]*user.Room)
+	s.Rooms = make(map[connected_user.RoomName]*connected_user.Room)
 
-	s.Rooms[user.General] = user.NewRoom(user.General)
-	s.Rooms[user.Main] = user.NewRoom(user.Main)
-	s.Rooms[user.Fitness] = user.NewRoom(user.Fitness)
+	s.Rooms[connected_user.General] = connected_user.NewRoom(connected_user.General)
+	s.Rooms[connected_user.Main] = connected_user.NewRoom(connected_user.Main)
+	s.Rooms[connected_user.Fitness] = connected_user.NewRoom(connected_user.Fitness)
 }
 
 // This enables the command list active users
@@ -194,7 +194,7 @@ func HandleNetworkMessages(conn *net.TCPConn, networkMessages chan message.Messa
 	}
 }
 
-func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
+func (s *Server) HandleConn(conn *net.TCPConn, user *connected_user.ConnectedUser) {
 	networkMessages := make(chan message.Message, 10)
 	validEvents := make(chan Event, 10)
 	errChan := make(chan message.Message)
@@ -234,12 +234,10 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
 				return
 			}
 			s.Logger.Debug("Writting a valid msg to conn:", "msg", msg, "UserID", user.ID, "username", user.Username)
-			for len(data) > 0 {
-				n, err := conn.Write(data)
-				if err != nil {
-					return
-				}
-				data = data[n:]
+			err = network.WriteProtocol(conn, data)
+
+			if err != nil {
+				s.Logger.Error("Failed to write data to conn", "err", err)
 			}
 		case errMsg := <-errChan:
 			data, err := errMsg.Encode()
@@ -247,12 +245,12 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *user.User) {
 				return
 			}
 			s.Logger.Debug("Writting an error msg to conn:", "msg", errMsg, "UserID", user.ID, "username", user.Username)
-			for len(data) > 0 {
-				n, err := conn.Write(data)
-				if err != nil {
-					return
-				}
-				data = data[n:]
+			err = network.WriteProtocol(conn, data)
+			if err != nil {
+				s.Logger.Error("Failed to write data to conn",
+					"err", err,
+					"remoteAddr", conn.RemoteAddr(),
+				)
 			}
 		}
 	}
@@ -287,7 +285,8 @@ func main() {
 	}
 }
 
-func InitUser(conn *net.TCPConn, id int) (*user.User, error) {
+// This func needs to be re written
+func InitUser(conn *net.TCPConn, id int) (*connected_user.ConnectedUser, error) {
 	initMsgBuf := make([]byte, 0, 200)
 
 	// Read bytes send
@@ -308,7 +307,7 @@ func InitUser(conn *net.TCPConn, id int) (*user.User, error) {
 	fmt.Printf("Decoded init message: Username=%s\n", initMsg.Username)
 
 	// Initing user and writting to the conn
-	user := &user.User{
+	user := &connected_user.ConnectedUser{
 		ID:       id,
 		Username: initMsg.Username,
 	}

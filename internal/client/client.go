@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"local-chat/internal/message"
 	"local-chat/internal/network"
-	"local-chat/internal/user"
+	"local-chat/internal/connected_user"
 	"log/slog"
 	"net"
 	"os"
@@ -16,13 +16,14 @@ import (
 
 //
 
+
 type ChatClient struct {
 	Conn     *net.TCPConn
 	Incoming chan message.Message //TODO: Maybe change the type
 	Outgoing chan message.Message
 }
 
-func InitUser(conn *net.TCPConn, name string) error {
+func InitUser(conn *net.TCPConn, username string, password) error {
 	fmt.Printf("InitID: started for user %q\n", name)
 
 	m := message.Message{
@@ -50,7 +51,7 @@ func InitUser(conn *net.TCPConn, name string) error {
 		return err
 	}
 
-	var u user.User
+	var u connected_user.ConnectedUser
 	err = u.Decode(data)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal ID: %w", err)
@@ -71,6 +72,7 @@ func InitUserSession(logger *slog.Logger) (*ChatClient, error) {
 		return nil, err
 	}
 
+	// FIX: this function changed
 	err = InitUser(tcpConn, name)
 	if err != nil {
 		panic(fmt.Errorf("Failed to InitID: %w", err))

@@ -7,6 +7,10 @@ import (
 	"net"
 )
 
+func FrameData(data []byte) []byte {
+	return append(data, []byte("\n\n")...)
+}
+
 // Function to read a byte stream of this protocol
 func ReadProtocol(r io.Reader, buf []byte) ([]byte, error) {
 	var result []byte
@@ -33,6 +37,18 @@ func ReadProtocol(r io.Reader, buf []byte) ([]byte, error) {
 	return result, nil
 }
 
+func WriteProtocol(r io.Writer, data []byte) error {
+	frame := FrameData(data)
+	for len(frame) > 0 {
+		n, err := r.Write(frame)
+		if err != nil {
+			return err
+		}
+		frame = frame[n:]
+	}
+	return nil
+}
+
 func HandleInput(conn *net.TCPConn, outgoing chan message.Message, logger *slog.Logger) {
 	logger.Info("HandleInput started", "addr", conn.RemoteAddr())
 
@@ -47,7 +63,7 @@ func HandleInput(conn *net.TCPConn, outgoing chan message.Message, logger *slog.
 
 		logger.Info("Sending message", "data", string(data))
 
-		_, err = conn.Write(data)
+		err = WriteProtocol(conn, data)
 		if err != nil {
 			logger.Error("Write failed", "error", err)
 			return

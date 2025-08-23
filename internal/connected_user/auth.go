@@ -21,7 +21,7 @@ type AuthRepository interface {
 }
 
 type UserRepository interface {
-	CreateUserProfile(username string ) (User, error)
+	CreateUserProfile(username string) (User, error)
 	GetUserByID(id int) (User, error)
 	GetUserByUsername(username string) (User, error)
 	UpdateUserProfile(user User) error

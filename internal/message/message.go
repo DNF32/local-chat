@@ -39,7 +39,7 @@ func (m *Message) Encode() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal message: %w", err)
 	}
-	return append(data, []byte("\n\n")...), nil
+	return data, nil
 }
 
 func (m *Message) Decode(data []byte) error {
