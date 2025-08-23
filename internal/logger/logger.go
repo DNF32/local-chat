@@ -1,12 +1,19 @@
 package logger
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 )
 
-const UI_LOG_PATH = "/Users/dnf/code/local-chat/ui_debug.log"
-const SERVER_LOG_PATH = "/Users/dnf/code/local-chat/backend_debug.log"
+var RepoPath string = ""
+
+func init() {
+	RepoPath = fmt.Sprintf("%s/%s", os.Getenv("HOME"), "code/local-chat/")
+}
+
+var UI_LOG_PATH = fmt.Sprintf(RepoPath, "ui_debug.log")
+var SERVER_LOG_PATH = fmt.Sprintf(RepoPath, "backend_debug.log")
 
 func NewFileLogger(path string) (*slog.Logger, error) {
 	file, err := os.OpenFile(

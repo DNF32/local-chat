@@ -22,7 +22,7 @@ type ChatClient struct {
 	Outgoing chan message.Message
 }
 
-func InitUser(conn *net.TCPConn, name string) (user.User, error) {
+func InitUser(conn *net.TCPConn, name string) error {
 	fmt.Printf("InitID: started for user %q\n", name)
 
 	m := message.Message{
@@ -34,37 +34,31 @@ func InitUser(conn *net.TCPConn, name string) (user.User, error) {
 
 	data, err := m.Encode()
 	if err != nil {
-		fmt.Printf("InitID: failed to encode message: %v\n", err)
-		return user.User{}, err
+		err = fmt.Errorf("InitID: failed to encode message: %v\n", err)
+		return err
 	}
-	fmt.Printf("InitID: message encoded, sending %d bytes\n", len(data))
 
-	fmt.Printf("InitID: message encoded,%s\n", data)
 	n, err := conn.Write(data)
 	if err != nil {
-		fmt.Printf("InitID: failed to write to connection: %v\n", err)
-		return user.User{}, err
+		err = fmt.Errorf("InitID: failed to write to connection: %v\n", err)
+		return err
 	}
-	fmt.Printf("InitID: wrote %d bytes to connection\n", n)
 
 	data, err = network.ReadProtocol(conn, nil)
 	if err != nil {
-		fmt.Printf("InitID: failed to read response: %v\n", err)
-		return user.User{}, err
+		err = fmt.Errorf("InitID: failed to read response: %v\n", err)
+		return err
 	}
-	fmt.Printf("InitID: received %d bytes from server\n", len(data))
 
 	var u user.User
 	err = u.Decode(data)
 	if err != nil {
-		fmt.Printf("InitID: failed to unmarshal response: %v\n", err)
-		return user.User{}, fmt.Errorf("failed to unmarshal ID: %w", err)
+		return fmt.Errorf("failed to unmarshal ID: %w", err)
 	}
-
-	return u, nil
+	return nil
 }
 
-func InitUserSession(logger *slog.Logger) (*ChatClient, *user.User, error) {
+func InitUserSession(logger *slog.Logger) (*ChatClient, error) {
 	if len(os.Args) <= 1 {
 		panic("Failed to provide Username")
 	}
@@ -74,14 +68,13 @@ func InitUserSession(logger *slog.Logger) (*ChatClient, *user.User, error) {
 	conn, err := net.Dial("tcp4", "localhost:8088")
 	tcpConn := conn.(*net.TCPConn)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	user, err := InitUser(tcpConn, name)
+	err = InitUser(tcpConn, name)
 	if err != nil {
 		panic(fmt.Errorf("Failed to InitID: %w", err))
 	}
-	fmt.Println("ID is", user.ID)
 
 	incoming := make(chan message.Message)
 	outgoing := make(chan message.Message)
@@ -91,5 +84,5 @@ func InitUserSession(logger *slog.Logger) (*ChatClient, *user.User, error) {
 	go network.HandleInput(tcpConn, client.Outgoing, logger)
 	go network.HandleOutput(tcpConn, client.Incoming, logger)
 
-	return &client, &user, nil
+	return &client, nil
 }
