@@ -51,7 +51,7 @@ func TestUserStateValid(t *testing.T) {
 		Action:    "text",
 		Content:   "this is a new message",
 		Timestamp: validEvent.Timestamp,
-		RoomName:  connected_user.General}
+		RouteRoomName:  connected_user.General}
 
 	if equal, field := newEvent.EqualTo(&expectedEvent); equal != true {
 		t.Fatalf("Expected events to be equal but got error in: %v", field)
@@ -132,12 +132,12 @@ func TestValidJoiningRoom(t *testing.T) {
 		Username: u.Username,
 		Action:   "joined",
 		Content:  "general", Timestamp: time.Now(),
-		RoomName: connected_user.General,
+		RouteRoomName: connected_user.General,
 	}
 
 	// We need to the new user state and the expected event if matched we only need to see RoomName
-	if expectedEvent.RoomName != newEvent.RoomName {
-		t.Fatalf("Expected error: '%s', got: '%s'", expectedEvent.RoomName, expectedEvent.RoomName)
+	if expectedEvent.RouteRoomName != newEvent.RouteRoomName {
+		t.Fatalf("Expected error: '%s', got: '%s'", expectedEvent.RouteRoomName, expectedEvent.RouteRoomName)
 	}
 	if !u.InRoom || u.Room != general {
 		t.Errorf("Expected error: '%v', got: '%v'", u.InRoom, true)
@@ -207,10 +207,10 @@ func TestTextEventUserInRoom(t *testing.T) {
 		Action:    "",
 		Content:   "Hello everyone!",
 		Timestamp: time.Now(),
-		RoomName:  connected_user.General}
+		RouteRoomName:  connected_user.General}
 
-	if expectedEvent.RoomName != newEvent.RoomName {
-		t.Fatalf("Expected RoomName: '%s', got: '%s'", expectedEvent.RoomName, newEvent.RoomName)
+	if expectedEvent.RouteRoomName != newEvent.RouteRoomName {
+		t.Fatalf("Expected RoomName: '%s', got: '%s'", expectedEvent.RouteRoomName, newEvent.RouteRoomName)
 	}
 
 	if !u.InRoom || u.Room != general {
@@ -243,8 +243,8 @@ func TestLeaveEventUserInRoom(t *testing.T) {
 	}
 
 	// Should return the room name they left
-	if newEvent.RoomName != connected_user.General {
-		t.Fatalf("Expected RoomName: '%s', got: '%s'", connected_user.General, newEvent.RoomName)
+	if newEvent.RouteRoomName != connected_user.General {
+		t.Fatalf("Expected RoomName: '%s', got: '%s'", connected_user.General, newEvent.RouteRoomName)
 	}
 
 	// User should no longer be in room after leaving

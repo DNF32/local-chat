@@ -18,8 +18,11 @@ type SQLiteAuthRepo struct {
 
 var UserRepo *SQLiteAuthRepo
 
-func NewSQLiteConnection(connectionString string) (*SQLiteAuthRepo, error) {
-	db, err := sql.Open("sqlite3", DB_PATH)
+func NewSQLiteAuthRepo(connectionString string) (*SQLiteAuthRepo, error) {
+	if connectionString == "" {
+		connectionString = DB_PATH
+	}
+	db, err := sql.Open("sqlite3", connectionString)
 	if err != nil {
 		return nil, err
 	}

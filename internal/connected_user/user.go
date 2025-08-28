@@ -16,12 +16,12 @@ const (
 
 type Room struct {
 	RoomName    RoomName
-	ActiveUsers map[int]struct{} // maybe just use an array of ints because this will be the user ids
+	ActiveUsers map[int64]struct{} // maybe just use an array of ints because this will be the user ids
 }
 
 func NewRoom(name RoomName) *Room {
 	return &Room{RoomName: name,
-		ActiveUsers: make(map[int]struct{})}
+		ActiveUsers: make(map[int64]struct{})}
 }
 
 func ValidateRoom(room string) (RoomName, error) {
@@ -41,21 +41,28 @@ type User struct {
 	Username string `json:"username"`
 }
 
+func (cm *User) Encode() ([]byte, error) {
+	return json.Marshal(cm)
+}
+
+func (cm *User) Decode(data []byte) error {
+	return json.Unmarshal(data, cm)
+}
+
 type ConnectedUser struct {
 	User
 	InRoom bool `json:"inroom"`
 	Room   *Room
 }
 
-func (u *ConnectedUser) LeaveRoom() (RoomName, error) {
+func (u *ConnectedUser) LeaveRoom() error {
 	if !u.InRoom || u.Room == nil {
-		return RoomName(""), fmt.Errorf("Can't leave room, current user isn't in one")
+		return fmt.Errorf("Can't leave room, current user isn't in one")
 	}
-	roomName := u.Room.RoomName
 	delete(u.Room.ActiveUsers, u.ID)
 	u.InRoom = false
 	u.Room = nil
-	return roomName, nil
+	return nil
 }
 func (u *ConnectedUser) JoinRoom(room *Room) error {
 	if u.InRoom {

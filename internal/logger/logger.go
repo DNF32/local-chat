@@ -14,6 +14,7 @@ func init() {
 
 var UI_LOG_PATH = fmt.Sprintf(RepoPath, "ui_debug.log")
 var SERVER_LOG_PATH = fmt.Sprintf(RepoPath, "backend_debug.log")
+var CLIENT_INFRA_LOG_PATH = fmt.Sprintf(RepoPath, "client_infra_debug.log")
 
 func NewFileLogger(path string) (*slog.Logger, error) {
 	file, err := os.OpenFile(

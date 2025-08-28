@@ -1,8 +1,9 @@
-package transport
+package serde
 
 import (
 	"encoding/json"
 	"fmt"
+	"local-chat/internal/transport/cryptol"
 	"log/slog"
 )
 
@@ -11,34 +12,39 @@ type SerdeAble interface {
 	Decode(data []byte) error
 }
 
-type CryptoService interface {
-	Encrypt(data []byte) (string, error)
-	Decrypt(encryptedData string) ([]byte, error)
+type EncryptedData struct {
+	Data string `json:"data"`
 }
 
 type Serde struct {
-	cryptoService CryptoService
+	cryptoService cryptol.Service
 	logger        *slog.Logger
 }
 
-type EncryptedData struct {
-	Data string `json:"data"`
+func New(cryptoService cryptol.Service, logger *slog.Logger) *Serde {
+	if logger == nil {
+		logger = slog.Default() // Use default logger if none provided
+	}
+	return &Serde{
+		cryptoService: cryptoService,
+		logger:        logger,
+	}
 }
 
 func (sd *Serde) EncodeEncrypted(obj SerdeAble) ([]byte, error) {
 	data, err := obj.Encode()
 	if err != nil {
-		return nil, err
+		return nil, &EncodeError{err}
 	}
 
 	encrypted, err := sd.cryptoService.Encrypt(data)
 	if err != nil {
-		return nil, err
+		return nil, &EncryptError{err}
 	}
 
 	encryptedBytes, err := json.Marshal(EncryptedData{Data: encrypted})
 	if err != nil {
-		return nil, fmt.Errorf("Failed to Marshall encrypted data: %w", err)
+		return nil, &EncodeError{fmt.Errorf("marshal error: %w", err)}
 	}
 
 	return encryptedBytes, nil
@@ -48,17 +54,17 @@ func (sd *Serde) DecodeEncrypted(data []byte, obj SerdeAble) error {
 	var enData EncryptedData
 	err := json.Unmarshal(data, &enData)
 	if err != nil {
-		return fmt.Errorf("Failed to UnMarshall encrypted data: %w", err)
+		return &DecodeError{fmt.Errorf("unmarshal error: %w", err)}
 	}
 
 	decrypted, err := sd.cryptoService.Decrypt(enData.Data)
 	if err != nil {
-		return fmt.Errorf("Failed to decrypt data: %w", err)
+		return &DecryptError{err}
 	}
 
 	err = obj.Decode(decrypted)
 	if err != nil {
-		return fmt.Errorf("Failed to decode data: %w", err)
+		return &DecodeError{err}
 	}
 
 	return nil

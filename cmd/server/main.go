@@ -2,34 +2,40 @@ package main
 
 import (
 	"fmt"
+	"local-chat/internal/connected_user"
+	"local-chat/internal/protocol"
 	"local-chat/internal/server"
+	"net"
 )
 
 func main() {
-	var id int = 1
 
 	s := server.Server{}
+	authRepo, _ := connected_user.NewSQLiteAuthRepo("")
+	userRepo, _ := connected_user.NewSQLiteUserRepo("")
 	s.Start()
+
 	for {
 		conn, err := s.Listener.AcceptTCP()
 		if err != nil {
-			return
+			continue // don't exit the server on accept error
 		}
 
-		user, err := server.InitUser(conn, id)
-		if err != nil {
-			// Failed to init this user continue in the loop to handle a new connection
-			continue
-		}
-		id++
+		go func(conn *net.TCPConn) {
+			defer conn.Close() // make sure connection is closed when done
 
-		userSend := make(chan server.Event, 20)
-		userRecv := make(chan server.Event, 20)
-		s.SendChannels[user.ID] = userSend
-		s.RecvChannels[user.ID] = userRecv
-		fmt.Printf("Created send/recv channels for user %d\n", user.ID)
+			var user *connected_user.User
+			user = handleClientLogin(conn, s.Serde, authRepo, userRepo, s.Logger)
+			connected_user := connected_user.ConnectedUser{User: *user, InRoom: false, Room: nil}
 
-		go s.HandleConn(conn, user)
-		fmt.Printf("Started goroutine to handle connection for user %d\n", user.ID)
+			userSend := make(chan protocol.Event, 20)
+			userRecv := make(chan protocol.Event, 20)
+			s.SendChannels[user.ID] = userSend
+			s.RecvChannels[user.ID] = userRecv
+			fmt.Printf("Created send/recv channels for user %d\n", user.ID)
+
+			s.HandleConn(conn, &connected_user) // handle the connection for this user
+			fmt.Printf("Started goroutine to handle connection for user %d\n", user.ID)
+		}(conn)
 	}
 }

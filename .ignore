@@ -1,0 +1,12 @@
+**.db
+*.log
+
+# Go binaries / executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
