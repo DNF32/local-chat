@@ -3,12 +3,12 @@ package client
 import (
 	"local-chat/internal/network"
 	"local-chat/internal/protocol"
-	"local-chat/internal/transport"
+	"local-chat/internal/transport/serde"
 	"log/slog"
 	"net"
 )
 
-func HandleInput(conn *net.TCPConn, outgoing chan protocol.ClientMessage, serde *transport.Serde, logger *slog.Logger) {
+func HandleInput(conn *net.TCPConn, outgoing chan protocol.ClientMessage, serde *serde.Serde, logger *slog.Logger) {
 	logger.Info("HandleInput started", "addr", conn.RemoteAddr())
 
 	for {
@@ -30,7 +30,7 @@ func HandleInput(conn *net.TCPConn, outgoing chan protocol.ClientMessage, serde 
 	}
 }
 
-func HandleOutput(conn *net.TCPConn, incoming chan protocol.ClientMessage, serde *transport.Serde, logger *slog.Logger) {
+func HandleOutput(conn *net.TCPConn, incoming chan protocol.ServerResponse, serde *serde.Serde, logger *slog.Logger) {
 	logger.Info("HandleOutput started", "addr", conn.RemoteAddr())
 	buf := make([]byte, 1024)
 
@@ -44,7 +44,7 @@ func HandleOutput(conn *net.TCPConn, incoming chan protocol.ClientMessage, serde
 			continue
 		}
 
-		var msg protocol.ClientMessage
+		var msg protocol.ServerResponse
 		err = serde.DecodeEncrypted(data, &msg)
 		if err != nil {
 			logger.Error("Decode failed", "error", err, "data", string(data))
@@ -53,11 +53,6 @@ func HandleOutput(conn *net.TCPConn, incoming chan protocol.ClientMessage, serde
 
 		logger.Info("Received message", "type", msg.Type, "username", msg.Username, "content", msg.Content)
 
-		select {
-		case incoming <- msg:
-			// Message sent successfully
-		default:
-			logger.Warn("Channel full, dropping message")
-		}
+		incoming <- msg
 	}
 }

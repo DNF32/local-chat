@@ -79,12 +79,12 @@ func (s *Server) BroadcastEvent(senderID int64, validEvent protocol.Event) {
 }
 
 func (s *Server) ProcessUserState(u *connected_user.ConnectedUser, validEvent protocol.Event) (protocol.Event, error) {
-	var roomName connected_user.RoomName
+	var routedRoomName connected_user.RoomName
 	var err error
 
 	switch validEvent.Type {
 	case protocol.EventTypeJoin:
-		room := s.Rooms[roomName]
+		room := s.Rooms[connected_user.RoomName(validEvent.Content)]
 		err = u.JoinRoom(room)
 		if err != nil {
 			return protocol.Event{}, err
@@ -94,9 +94,9 @@ func (s *Server) ProcessUserState(u *connected_user.ConnectedUser, validEvent pr
 		if !u.InRoom {
 			return protocol.Event{}, fmt.Errorf("User not in room, so can't send a message")
 		}
-		roomName = u.Room.RoomName
+		routedRoomName = u.Room.RoomName
 	case protocol.EventTypeLeave:
-		roomName = u.Room.RoomName
+		routedRoomName = u.Room.RoomName
 		err = u.LeaveRoom()
 		if err != nil {
 			return protocol.Event{}, err
@@ -105,7 +105,7 @@ func (s *Server) ProcessUserState(u *connected_user.ConnectedUser, validEvent pr
 		return protocol.Event{}, fmt.Errorf("The other message types are not supported")
 	}
 
-	validEvent.RouteRoomName = roomName
+	validEvent.RouteRoomName = routedRoomName
 	return validEvent, nil
 }
 
@@ -143,6 +143,11 @@ func (s *Server) HandleConn(conn *net.TCPConn, user *connected_user.ConnectedUse
 	validEvents := make(chan protocol.Event, 10)
 	errChan := make(chan protocol.ServerResponse)
 	ackChan := make(chan protocol.ServerResponse)
+
+	defer close(networkMessages)
+	defer close(validEvents)
+	defer close(errChan)
+	defer close(ackChan)
 
 	// handle input comming from the network
 	go HandleNetworkMessages(conn, networkMessages, s.Serde, s.Logger)

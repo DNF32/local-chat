@@ -19,6 +19,29 @@ func NewClientMessageWithAuth(auth connected_user.AuthCredentials) ClientMessage
 	}
 }
 
+func NewClientJoinMessage(username, roomName string) ClientMessage {
+	return ClientMessage{
+		Type:     EventTypeJoin,
+		Username: username,
+		Content:  roomName,
+	}
+}
+
+func NewClientLeaveMessage(username string) ClientMessage {
+	return ClientMessage{
+		Type:     EventTypeLeave,
+		Username: username,
+	}
+}
+
+func NewClientTextMessage(username, content string) ClientMessage {
+	return ClientMessage{
+		Type:     EventTypeLeave,
+		Username: username,
+		Content:  content,
+	}
+}
+
 func (cm *ClientMessage) Encode() ([]byte, error) {
 	return json.Marshal(cm)
 }

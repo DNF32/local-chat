@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"local-chat/internal/connected_user"
 	"local-chat/internal/network"
 	"local-chat/internal/protocol"
@@ -26,7 +25,7 @@ func handleClientLogin(conn *net.TCPConn, s *serde.Serde, authRepo connected_use
 				continue
 			} else {
 				// Other errors (e.g., invalid credentials)
-				fmt.Println("Login failed:", "err", err)
+				logger.Info("Login failed:", "err", err)
 				errMsg := protocol.NewFailedLoginResponse(err)
 				data, _ := s.EncodeEncrypted(&errMsg)
 				_ = network.WriteProtocol(conn, data)

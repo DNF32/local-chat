@@ -2,17 +2,14 @@ package client
 
 import (
 	"errors"
+	"fmt"
 	"local-chat/internal/connected_user"
 	"local-chat/internal/logger"
-	"local-chat/internal/message"
-	"local-chat/internal/network"
 	"local-chat/internal/protocol"
-	"local-chat/internal/transport"
-	"local-chat/internal/transport/crypto"
+	"local-chat/internal/transport/cryptol"
 	"local-chat/internal/transport/serde"
 	"log/slog"
 	"net"
-	"time"
 )
 
 var ErrInvalidCredential = errors.New("Invalid credentials, please try again.")
@@ -38,7 +35,7 @@ func NewClientInfra() (ClientInfra, error) {
 		return ClientInfra{}, err
 	}
 
-	cs := crypto.Base64Encoder{}
+	cs := cryptol.Base64Encoder{}
 	sd := serde.New(&cs, logger)
 
 	cf := ClientInfra{ // Consistent variable naming
@@ -51,12 +48,21 @@ func NewClientInfra() (ClientInfra, error) {
 }
 
 type ChatClient struct {
-	Incoming chan protocol.ClientMessage
+	Incoming chan protocol.ServerResponse
 	Outgoing chan protocol.ClientMessage
 	Ack      chan any
 
 	User connected_user.User
 	ClientInfra
+}
+
+func (cc ChatClient) HandleInput() {
+	HandleInput(cc.ClientInfra.conn, cc.Outgoing, cc.ClientInfra.serde, cc.ClientInfra.Logger)
+
+}
+
+func (cc ChatClient) HandleOutput() {
+	HandleOutput(cc.ClientInfra.conn, cc.Incoming, cc.ClientInfra.serde, cc.ClientInfra.Logger)
 }
 
 func NewChatClient() (*ChatClient, error) {
@@ -66,7 +72,7 @@ func NewChatClient() (*ChatClient, error) {
 	}
 
 	// Start TCP
-	incoming := make(chan protocol.ClientMessage)
+	incoming := make(chan protocol.ServerResponse)
 	outgoing := make(chan protocol.ClientMessage)
 	ack := make(chan any)
 
@@ -80,35 +86,19 @@ func NewChatClient() (*ChatClient, error) {
 	return &c, nil // Return pointer to ChatClient
 }
 
-func (c *ChatClient) Auth(auth connected_user.AuthCredentials) {
-	// we will send the credential and expect a clientMessage with type initMessage if all good,
-
+type FailedLoginErr struct {
+	serverError error
 }
 
-func sendAuthRequest(conn *net.TCPConn, auth connected_user.AuthCredentials, serde *transport.Serde) (connected_user.User, error) {
+func (err FailedLoginErr) Error() string {
+	return fmt.Sprintf("Failed login: %v", err.serverError.Error())
+}
 
+type Username string
+
+func (cc *ChatClient) SendAuthRequest(username, password string) {
+	auth := connected_user.NewAuthCredentials(username, password)
 	cmsg := protocol.NewClientMessageWithAuth(auth)
 
-	data, err := serde.EncodeEncrypted(&cmsg)
-	if err != nil {
-		return connected_user.User{}, err
-	}
-
-	err = network.WriteProtocol(conn, data)
-	if err != nil {
-		return connected_user.User{}, err
-	}
-
-	data, err = network.ReadProtocol(conn, nil)
-	if err != nil {
-		return connected_user.User{}, err
-	}
-
-	var u connected_user.User
-	err = serde.DecodeEncrypted(data, &u)
-	if err != nil {
-		return connected_user.User{}, err
-	}
-
-	return u, nil
+	cc.Outgoing <- cmsg
 }

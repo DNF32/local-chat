@@ -11,6 +11,10 @@ type AuthCredentials struct {
 	Password     string `json:"password"`
 }
 
+func NewAuthCredentials(username, password string) AuthCredentials {
+	return AuthCredentials{AuthUsername: username, Password: password}
+}
+
 var ErrWrongPassword = errors.New("Wrong password")
 
 type AuthRepository interface {

@@ -54,10 +54,10 @@ func (repo *SQLiteAuthRepo) Init() error {
 }
 
 func (repo *SQLiteAuthRepo) CreateUserCredentials(username, hashedPassword string) error {
-	_, err := repo.db.Exec(`insert into credential (username, hashedPassword)
+	_, err := repo.db.Exec(`insert into credentials (username, hashedPassword)
 values (?,?)`, username, hashedPassword)
 	if err != nil {
-		return ErrCreatingUserCredentials
+		return err
 	}
 	return nil
 }
@@ -66,7 +66,7 @@ func (repo *SQLiteAuthRepo) GetHashedPassword(username string) (string, error) {
 	var hashedPassword string
 	err := repo.db.QueryRow(`SELECT hashedPassword FROM credentials WHERE username = ?`, username).Scan(&hashedPassword)
 	if err != nil {
-		return "", ErrGettingHashedPassword
+		return "", err
 	}
 	return hashedPassword, nil
 }

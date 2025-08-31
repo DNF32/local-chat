@@ -20,7 +20,7 @@ const (
 	EventTypeAck         EventType = "ack"
 	EventTypeError       EventType = "error"
 	EventTypeFailedLogin EventType = "FailedLogin"
-	EventTypeSucessLogin EventType = "FailedLogin"
+	EventTypeSucessLogin EventType = "Sucessful"
 
 	// Server broadcasts
 	EventTypeUserJoined    EventType = "user_joined"
