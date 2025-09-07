@@ -47,8 +47,7 @@ type Dash struct {
 	username string
 	client   *client.ChatClient
 
-	State *state.State
-	err   error
+	err error
 }
 
 func (m *Dash) SetUsername(username string) {
@@ -62,7 +61,7 @@ func (m Dash) Init() tea.Cmd {
 	)
 }
 
-func InitialModel(username string, client *client.ChatClient, state *state.State) Dash {
+func InitialModel(username string, client *client.ChatClient, width, height int) Dash {
 	ta := textarea.New()
 	ta.Placeholder = "Send a message..."
 	ta.Focus()
@@ -79,12 +78,11 @@ func InitialModel(username string, client *client.ChatClient, state *state.State
 
 	ta.KeyMap.InsertNewline.SetEnabled(false)
 	return Dash{textarea: ta,
-		width:    80,
-		height:   24,
+		width:    width,
+		height:   height,
 		client:   client,
 		username: username,
 
-		State: state,
 		errStyle: lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#FF5555")).
 			Background(lipgloss.Color("#330000")).
@@ -98,6 +96,10 @@ func (m Dash) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	)
 
 	m.textarea, tiCmd = m.textarea.Update(msg)
+	// clean err if it's present
+	if m.err != nil {
+		m.err = nil
+	}
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -130,9 +132,6 @@ func (m Dash) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return state.StateChangeMsg{NewState: state.Room, Username: string(msg.Username)}
 			}
 			return m, stateChangeCmd
-		case protocol.EventTypeLeave:
-			// we need to go to the dash screen
-			*m.State = state.Dash
 		case protocol.EventTypeChat:
 			panic("Dash received a NetworkACk of type EventTypeChat, this is an invalida state")
 		}

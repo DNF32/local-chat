@@ -33,6 +33,9 @@ type RoomModel struct {
 	messages []string
 	textarea textarea.Model
 
+	width  int
+	height int
+
 	senderStyle   lipgloss.Style
 	receiverStyle lipgloss.Style
 	joinedStyle   lipgloss.Style
@@ -45,15 +48,13 @@ type RoomModel struct {
 	roomName string
 
 	err error
-
-	State *state.State
 }
 
 func (m RoomModel) SetUsername(username string) {
 	m.username = username
 }
 
-func InitialRoomModel(username string, client *client.ChatClient, state *state.State) RoomModel {
+func InitialRoomModel(username string, client *client.ChatClient, width, height int) RoomModel {
 	ta := textarea.New()
 	ta.Placeholder = "Send a message..."
 	ta.Focus()
@@ -61,7 +62,7 @@ func InitialRoomModel(username string, client *client.ChatClient, state *state.S
 	ta.Prompt = "┃ "
 	ta.CharLimit = 280
 
-	ta.SetWidth(30)
+	ta.SetWidth(width)
 	ta.SetHeight(3)
 
 	// Remove cursor line styling
@@ -69,7 +70,7 @@ func InitialRoomModel(username string, client *client.ChatClient, state *state.S
 
 	ta.ShowLineNumbers = false
 
-	vp := viewport.New(30, 5)
+	vp := viewport.New(width, height)
 	vp.SetContent(`Welcome to the chat room!
 Type a message and press Enter to send.`)
 
@@ -90,7 +91,6 @@ Type a message and press Enter to send.`)
 
 		username: username,
 		client:   client,
-		State:    state,
 	}
 }
 
@@ -112,9 +112,11 @@ func (m RoomModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.viewport.Width = msg.Width
-		m.textarea.SetWidth(msg.Width)
-		m.viewport.Height = msg.Height - m.textarea.Height() - lipgloss.Height(gap)
+		m.width = msg.Width
+		m.height = msg.Height
+		m.viewport.Width = m.width
+		m.textarea.SetWidth(m.width)
+		m.viewport.Height = m.height - m.textarea.Height() - lipgloss.Height(gap)
 
 		if len(m.messages) > 0 {
 			// Wrap content before setting it.
@@ -147,7 +149,10 @@ func (m RoomModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		//	we need to switch to the room state
 		case protocol.EventTypeLeave:
 			// we need to go to the dash screen
-			*m.State = state.Dash
+			stateChangeCmd := func() tea.Msg {
+				return state.StateChangeMsg{NewState: state.Dash, Username: string("")}
+			}
+			return m, stateChangeCmd
 		case protocol.EventTypeChat:
 			message := m.senderStyle.Render(fmt.Sprintf("%s: ", msg.Username)) + msg.Content
 			m.messages = append(m.messages, message)
@@ -174,17 +179,6 @@ func (m RoomModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		m.messages = append(m.messages, message)
 
-	//switch msg.Type {
-	//case message.Join, message.Leave, message.Error:
-	//	m.messages = append(m.messages, m.senderStyle.Render(msg.Content))
-	//case message.Text:
-	//	m.messages = append(m.messages, m.senderStyle.Render(fmt.Sprintf("%s: ", msg.Username))+msg.Content)
-	//}
-	//m.viewport.SetContent(lipgloss.NewStyle().Width(m.viewport.Width).Render(strings.Join(m.messages, "\n")))
-	//m.viewport.GotoBottom()
-	//return m, tea.Batch(listenForIncomingMsg(m.client), tiCmd, vpCmd)
-
-	// We handle errors just like any other message
 	case errMsg:
 		m.err = msg
 		return m, nil

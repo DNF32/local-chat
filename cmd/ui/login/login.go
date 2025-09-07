@@ -51,11 +51,9 @@ type LoginModel struct {
 	err     error
 
 	client *client.ChatClient
-
-	State *state.State
 }
 
-func InitialLogin(client *client.ChatClient, state *state.State) LoginModel {
+func InitialLogin(client *client.ChatClient, width, height int) LoginModel {
 	var inputs []textinput.Model = make([]textinput.Model, 2)
 	inputs[us] = textinput.New()
 	inputs[us].Placeholder = "User1"
@@ -73,11 +71,10 @@ func InitialLogin(client *client.ChatClient, state *state.State) LoginModel {
 
 	return LoginModel{
 		inputs:  inputs,
-		width:   80,
-		height:  24,
+		width:   width,
+		height:  height,
 		focused: 0,
 		err:     nil,
-		State:   state,
 		client:  client,
 	}
 }

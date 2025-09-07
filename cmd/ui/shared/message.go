@@ -40,6 +40,7 @@ func ParseMsgType(s string) (protocol.EventType, string, error) {
 	}
 }
 
+
 func BuildClientMessage(msgType protocol.EventType, username, content, roomName string) protocol.ClientMessage {
 	switch msgType {
 	case protocol.EventTypeJoin:

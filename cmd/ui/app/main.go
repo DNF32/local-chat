@@ -14,7 +14,10 @@ import (
 )
 
 type Router struct {
-	State  *state.State
+	State  state.State
+	width  int
+	height int
+
 	room   ui.RoomModel
 	login  login.LoginModel
 	dash   dash.Dash
@@ -29,15 +32,17 @@ func InitialModel() Router {
 	go client.HandleOutput()
 	//logger, _ := logger.NewFileLogger(logger.UI_LOG_PATH)
 
-	room := ui.InitialRoomModel("", client, &state)
-	login := login.InitialLogin(client, &state)
-	dash := dash.InitialModel("", client, &state)
+	room := ui.InitialRoomModel("", client, 30, 5)
+	login := login.InitialLogin(client, 30, 5)
+	dash := dash.InitialModel("", client, 30, 5)
 	return Router{
-		State:  &state,
+		State:  state,
 		room:   room,
 		login:  login,
 		dash:   dash,
 		client: client,
+		width:  30,
+		height: 5,
 	}
 }
 
@@ -46,6 +51,22 @@ func (r Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Handle messages globally first
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+
+		modelLogin, c := r.login.Update(msg)
+		r.login = modelLogin.(login.LoginModel)
+		cmdLogin := c
+
+		modelDash, c := r.dash.Update(msg)
+		r.dash = modelDash.(dash.Dash)
+		cmdDash := c
+
+		modelRoom, c := r.room.Update(msg)
+		r.room = modelRoom.(ui.RoomModel)
+		cmdRoom := c
+
+		return r, tea.Batch(cmdLogin, cmdDash, cmdRoom)
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
@@ -53,22 +74,22 @@ func (r Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case state.StateChangeMsg:
 		// Handle state changes globally FIRST
-		*r.State = msg.NewState
+		r.State = msg.NewState
 
 		switch msg.NewState {
 		case state.Dash:
 			if msg.Username != "" {
-				r.dash = dash.InitialModel(msg.Username, r.client, r.State)
+				r.dash = dash.InitialModel(msg.Username, r.client, r.width, r.height)
 				// Return immediately with the dash init command
 				return r, r.dash.Init()
 			}
 		case state.Room:
 			// Handle room initialization if needed
-			r.room = ui.InitialRoomModel(msg.Username, r.client, r.State)
+			r.room = ui.InitialRoomModel(msg.Username, r.client, r.width, r.height)
 			return r, r.room.Init()
 		case state.Login:
 			// Handle login initialization if needed
-			r.login = login.InitialLogin(r.client, r.State)
+			r.login = login.InitialLogin(r.client, r.width, r.height)
 			return r, r.login.Init()
 		}
 		// For any state change, return immediately to trigger re-render
@@ -76,7 +97,7 @@ func (r Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	// Route messages to current state AFTER handling state changes
-	switch *r.State {
+	switch r.State {
 	case state.Login:
 		model, c := r.login.Update(msg)
 		r.login = model.(login.LoginModel)
@@ -96,7 +117,7 @@ func (r Router) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (r Router) View() string {
 	// Add debug logging with proper structured format
 	stateStr := ""
-	switch *r.State {
+	switch r.State {
 	case state.Login:
 		stateStr = "Login"
 	case state.Dash:
@@ -107,10 +128,10 @@ func (r Router) View() string {
 		stateStr = "Unknown"
 	}
 
-	r.client.Logger.Info("Rendering view", "state", stateStr, "stateValue", int(*r.State))
+	r.client.Logger.Info("Rendering view", "state", stateStr, "stateValue", int(r.State))
 
 	// Route to appropriate view based on current state
-	switch *r.State {
+	switch r.State {
 	case state.Login:
 		r.client.Logger.Info("Rendering login view")
 		return r.login.View()
